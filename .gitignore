@@ -1,0 +1,21 @@
+# Build files/dirs
+.gradle
+build/
+out/
+target/
+local/
+bin/
+
+# IDE files/dirs
+*.iml
+.idea
+.DS_Store
+.classpath
+.factorypath
+.settings
+.project
+.vscode
+
+# Ansible
+*.retry
+packer
