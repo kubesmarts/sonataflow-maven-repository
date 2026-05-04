@@ -15,6 +15,7 @@ bin/
 .settings
 .project
 .vscode
+.bob
 
 # Ansible
 *.retry
