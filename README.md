@@ -8,6 +8,20 @@ This repository provides a centralized location for accessing SonataFlow Maven a
 
 ## Using as a Maven Repository
 
+### Prerequisites
+
+Since this repository uses GitHub Packages, you need to authenticate with a GitHub Personal Access Token (PAT) to access the packages.
+
+#### Creating a Personal Access Token
+
+1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Click "Generate new token" → "Generate new token (classic)"
+3. Give your token a descriptive name (e.g., "Maven GitHub Packages")
+4. Select the `read:packages` scope (required to download packages)
+5. Click "Generate token" and copy the token immediately (you won't be able to see it again)
+
+For more information, see [GitHub's documentation on creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+
 ### Configuration
 
 #### 1. Configure Maven Settings
@@ -20,6 +34,14 @@ Add the following to your `~/.m2/settings.xml` file:
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
   
+  <servers>
+    <server>
+      <id>github-sonataflow</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <password>YOUR_GITHUB_PERSONAL_ACCESS_TOKEN</password>
+    </server>
+  </servers>
+
   <profiles>
     <profile>
       <id>github-sonataflow</id>
@@ -40,6 +62,10 @@ Add the following to your `~/.m2/settings.xml` file:
   </activeProfiles>
 </settings>
 ```
+
+**Important:** Replace `YOUR_GITHUB_USERNAME` with your GitHub username and `YOUR_GITHUB_PERSONAL_ACCESS_TOKEN` with the token you created in the prerequisites step.
+
+**Security Note:** Never commit your `settings.xml` file with your personal access token to version control. Keep it secure on your local machine.
 
 #### 2. Use in Your Project
 
@@ -72,6 +98,8 @@ You can also configure the repository directly in your project's `pom.xml`:
 </repositories>
 ```
 
+**Note:** Even with project-level repository configuration, you still need to configure authentication in your `~/.m2/settings.xml` file as shown above.
+
 ## Available Artifacts
 
 To browse available packages, visit: https://github.com/kubesmarts/sonataflow-maven-repository/packages
@@ -84,12 +112,21 @@ For more information about the build process, see the [workflow configuration](.
 
 ## Troubleshooting
 
+### Authentication Issues
+
+If you receive a 401 Unauthorized error:
+- Verify your GitHub username is correct in `settings.xml`
+- Ensure your Personal Access Token has the `read:packages` scope
+- Check that your token hasn't expired
+- Confirm the server `id` in `settings.xml` matches the repository `id`
+
 ### Dependency Not Found
 
 If Maven cannot find a dependency:
 - Verify the artifact exists in the [packages list](https://github.com/kubesmarts/sonataflow-maven-repository/packages)
 - Check that the version number is correct
 - Ensure the repository is properly configured in your `settings.xml` or your project
+- Confirm you have proper authentication configured (see Authentication Issues above)
 
 ## License
 
