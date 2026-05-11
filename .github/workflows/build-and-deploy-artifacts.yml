@@ -100,7 +100,7 @@ jobs:
 
       - name: Update kie-tools version and prepare repository
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }} --exclude "*/maven-base/*"
+          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }} --exclude "*/maven-base/*" "*/serverless-logic-web-tools-swf-deployment-quarkus-app/*"
         working-directory: kie-tools
 
       - name: Update kie-tools maven-base
@@ -108,6 +108,11 @@ jobs:
           python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }}
           sed -i 's|<version\.org\.kie\.kogito>.*</version\.org\.kie\.kogito>|<version.org.kie.kogito>${project.version}</version.org.kie.kogito>|g' ./pom.xml
         working-directory: kie-tools/packages/maven-base
+
+      - name: Update kie-tools serverless-logic-web-tools-swf-deployment-quarkus-app
+        run: |
+          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }}
+        working-directory: kie-tools/packages/serverless-logic-web-tools-swf-deployment-quarkus-app
 
       - name: Build and publish Drools artifacts
         run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml
