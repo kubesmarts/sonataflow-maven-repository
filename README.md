@@ -48,7 +48,7 @@ Add the following to your `~/.m2/settings.xml` file:
       <repositories>
         <repository>
           <id>github-sonataflow</id>
-          <url>https://maven.pkg.github.com/kubesmarts/sonataflow-maven-repository</url>
+          <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
@@ -90,7 +90,7 @@ You can also configure the repository directly in your project's `pom.xml`:
 <repositories>
   <repository>
     <id>github-sonataflow</id>
-    <url>https://maven.pkg.github.com/kubesmarts/sonataflow-maven-repository</url>
+    <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
     <snapshots>
       <enabled>true</enabled>
     </snapshots>
@@ -102,7 +102,7 @@ You can also configure the repository directly in your project's `pom.xml`:
 
 ## Available Artifacts
 
-To browse available packages, visit: https://github.com/kubesmarts/sonataflow-maven-repository/packages
+To browse available packages, visit: https://github.com/kubesmarts/logic-maven-repository/packages
 
 ## Building and Deploying
 
@@ -123,7 +123,7 @@ If you receive a 401 Unauthorized error:
 ### Dependency Not Found
 
 If Maven cannot find a dependency:
-- Verify the artifact exists in the [packages list](https://github.com/kubesmarts/sonataflow-maven-repository/packages)
+- Verify the artifact exists in the [packages list](https://github.com/kubesmarts/logic-maven-repository/packages)
 - Check that the version number is correct
 - Ensure the repository is properly configured in your `settings.xml` or your project
 - Confirm you have proper authentication configured (see Authentication Issues above)
