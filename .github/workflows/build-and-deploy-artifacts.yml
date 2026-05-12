@@ -1,19 +1,19 @@
-name: Build and publish SonataFlow jars to the GitHub Maven Repository
+name: Build and publish LOGIC jars to the GitHub Maven Repository
 on:
   workflow_dispatch:
     inputs:
-      SONATAFLOW_VERSION:
-        description: "Sonataflow version to be built and published."
+      LOGIC_VERSION:
+        description: "LOGIC version to be built and published."
         type: string
         required: false
         default: 111-SNAPSHOT
       GITHUB_ORGANISATION:
-        description: "GitHub organisation that contains the SonataFlow repositories."
+        description: "GitHub organisation that contains the LOGIC repositories."
         type: string
         required: false
         default: kiegroup
       GITHUB_ORGANISATION_KIE_TOOLS:
-        description: "GitHub organisation that contains the SonataFlow kie-tools repository."
+        description: "GitHub organisation that contains the LOGIC kie-tools repository."
         type: string
         required: false
         default: kubesmarts
@@ -85,33 +85,33 @@ jobs:
 
       - name: Update Drools version and prepare repository
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }} --exclude "*/kie-ci-test-jars/*"
+          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --exclude "*/kie-ci-test-jars/*"
         working-directory: drools
 
       - name: Update kogito-runtimes version
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }}
+          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
         working-directory: kogito-runtimes
 
       - name: Update kogito-apps version
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }} --update-root-parent
+          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --update-root-parent
         working-directory: kogito-apps
 
       - name: Update kie-tools version and prepare repository
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }} --exclude "*/maven-base/*" "*/serverless-logic-web-tools-swf-deployment-quarkus-app/*"
+          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --exclude "*/maven-base/*" "*/serverless-logic-web-tools-swf-deployment-quarkus-app/*"
         working-directory: kie-tools
 
       - name: Update kie-tools maven-base
         run: |
-          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }}
+          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
           sed -i 's|<version\.org\.kie\.kogito>.*</version\.org\.kie\.kogito>|<version.org.kie.kogito>${project.version}</version.org.kie.kogito>|g' ./pom.xml
         working-directory: kie-tools/packages/maven-base
 
       - name: Update kie-tools serverless-logic-web-tools-swf-deployment-quarkus-app
         run: |
-          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.SONATAFLOW_VERSION }}
+          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
         working-directory: kie-tools/packages/serverless-logic-web-tools-swf-deployment-quarkus-app
 
       - name: Build and publish Drools artifacts
@@ -121,23 +121,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kogito-runtimes artifacts
-        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.SONATAFLOW_VERSION }}
+        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.LOGIC_VERSION }}
         working-directory: kogito-runtimes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kogito-apps artifacts
-        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.SONATAFLOW_VERSION }}
+        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.LOGIC_VERSION }}
         working-directory: kogito-apps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kie-tools artifacts
-        run: mvn --batch-mode clean deploy -s ${{ github.workspace }}/.github/configs/settings.xml -DskipTests -Drevision=${{ inputs.SONATAFLOW_VERSION }} -Dversion.org.kie.kogito=${{ inputs.SONATAFLOW_VERSION }} -Dskip.maven.deploy.in.pnpm.wrapped.artifacts=false
+        run: mvn --batch-mode clean deploy -s ${{ github.workspace }}/.github/configs/settings.xml -DskipTests -Drevision=${{ inputs.LOGIC_VERSION }} -Dversion.org.kie.kogito=${{ inputs.LOGIC_VERSION }} -Dskip.maven.deploy.in.pnpm.wrapped.artifacts=false
         working-directory: kie-tools
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAVEN_ARGS: --settings=${{ github.workspace }}/.github/configs/settings.xml -Drevision=${{ inputs.SONATAFLOW_VERSION }}
+          MAVEN_ARGS: --settings=${{ github.workspace }}/.github/configs/settings.xml -Drevision=${{ inputs.LOGIC_VERSION }}
           KIE_TOOLS_BUILD__mavenDeploySkip: false
           DROOLS_AND_KOGITO__skip: true
           KIE_TOOLS_BUILD__runTests: false

@@ -1,10 +1,10 @@
-# SonataFlow Maven Repository
+# Logic Maven Repository
 
-This repository serves as a GitHub Packages-based Maven repository for SonataFlow artifacts. It contains built Maven artifacts (JARs, source JARs, and other standard Maven artifacts) from the SonataFlow ecosystem.
+This repository serves as a GitHub Packages-based Maven repository for Logic artifacts. It contains built Maven artifacts (JARs, source JARs, and other standard Maven artifacts) from the Logic ecosystem.
 
 ## Purpose
 
-This repository provides a centralized location for accessing SonataFlow Maven artifacts that may not be available in Maven Central or require specific versions. The artifacts are automatically built and deployed via GitHub Actions workflows.
+This repository provides a centralized location for accessing Logic Maven artifacts that may not be available in Maven Central or require specific versions. The artifacts are automatically built and deployed via GitHub Actions workflows.
 
 ## Using as a Maven Repository
 
@@ -36,7 +36,7 @@ Add the following to your `~/.m2/settings.xml` file:
   
   <servers>
     <server>
-      <id>github-sonataflow</id>
+      <id>github-logic</id>
       <username>YOUR_GITHUB_USERNAME</username>
       <password>YOUR_GITHUB_PERSONAL_ACCESS_TOKEN</password>
     </server>
@@ -44,10 +44,10 @@ Add the following to your `~/.m2/settings.xml` file:
 
   <profiles>
     <profile>
-      <id>github-sonataflow</id>
+      <id>github-logic</id>
       <repositories>
         <repository>
-          <id>github-sonataflow</id>
+          <id>github-logic</id>
           <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
           <snapshots>
             <enabled>true</enabled>
@@ -58,7 +58,7 @@ Add the following to your `~/.m2/settings.xml` file:
   </profiles>
 
   <activeProfiles>
-    <activeProfile>github-sonataflow</activeProfile>
+    <activeProfile>github-logic</activeProfile>
   </activeProfiles>
 </settings>
 ```
@@ -69,7 +69,7 @@ Add the following to your `~/.m2/settings.xml` file:
 
 #### 2. Use in Your Project
 
-Once configured, you can add SonataFlow dependencies to your `pom.xml`:
+Once configured, you can add Logic dependencies to your `pom.xml`:
 
 ```xml
 <dependencies>
@@ -78,7 +78,7 @@ Once configured, you can add SonataFlow dependencies to your `pom.xml`:
     <artifactId>artifactIdOfTheDependency</artifactId>
     <version>YOUR_DESIRED_VERSION</version>
   </dependency>
-  <!-- Add other SonataFlow dependencies as needed -->
+  <!-- Add other Logic dependencies as needed -->
 </dependencies>
 ```
 
@@ -89,7 +89,7 @@ You can also configure the repository directly in your project's `pom.xml`:
 ```xml
 <repositories>
   <repository>
-    <id>github-sonataflow</id>
+    <id>github-logic</id>
     <url>https://maven.pkg.github.com/kubesmarts/logic-maven-repository</url>
     <snapshots>
       <enabled>true</enabled>
