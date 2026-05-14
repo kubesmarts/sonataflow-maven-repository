@@ -1,5 +1,7 @@
 name: Build and publish LOGIC jars to the GitHub Maven Repository
 on:
+  schedule:
+    - cron: '59 23 * * *'  # Runs daily at 23:59 UTC
   workflow_dispatch:
     inputs:
       LOGIC_VERSION:
@@ -35,8 +37,12 @@ on:
 #        default: false
 
 env:
-  MAVEN_REPOSITORY_URL: ${{ inputs.MAVEN_REPOSITORY_URL }}
-  GITHUB_USERNAME: ${{ inputs.GITHUB_ORGANISATION }}
+  LOGIC_VERSION: ${{ inputs.LOGIC_VERSION || '111-SNAPSHOT' }}
+  GITHUB_ORGANISATION: ${{ inputs.GITHUB_ORGANISATION || 'kiegroup' }}
+  GITHUB_ORGANISATION_KIE_TOOLS: ${{ inputs.GITHUB_ORGANISATION_KIE_TOOLS || 'kubesmarts' }}
+  BRANCH_TO_BUILD: ${{ inputs.BRANCH_TO_BUILD || 'main' }}
+  MAVEN_REPOSITORY_URL: ${{ inputs.MAVEN_REPOSITORY_URL || 'https://maven.pkg.github.com/kubesmarts/logic-maven-repository' }}
+  GITHUB_USERNAME: ${{ inputs.GITHUB_ORGANISATION || 'kiegroup' }}
 
 permissions:
   contents: read
@@ -58,60 +64,60 @@ jobs:
       - name: Checkout Drools
         uses: actions/checkout@v6
         with:
-          repository: ${{ inputs.GITHUB_ORGANISATION }}/drools
+          repository: ${{ env.GITHUB_ORGANISATION }}/drools
           path: drools
-          ref: ${{ inputs.BRANCH_TO_BUILD }}
+          ref: ${{ env.BRANCH_TO_BUILD }}
 
       - name: Checkout kogito-runtimes
         uses: actions/checkout@v6
         with:
-          repository: ${{ inputs.GITHUB_ORGANISATION }}/kogito-runtimes
+          repository: ${{ env.GITHUB_ORGANISATION }}/kogito-runtimes
           path: kogito-runtimes
-          ref: ${{ inputs.BRANCH_TO_BUILD }}
+          ref: ${{ env.BRANCH_TO_BUILD }}
 
       - name: Checkout kogito-apps
         uses: actions/checkout@v6
         with:
-          repository: ${{ inputs.GITHUB_ORGANISATION }}/kogito-apps
+          repository: ${{ env.GITHUB_ORGANISATION }}/kogito-apps
           path: kogito-apps
-          ref: ${{ inputs.BRANCH_TO_BUILD }}
+          ref: ${{ env.BRANCH_TO_BUILD }}
 
       - name: Checkout kubesmarts/kie-tools
         uses: actions/checkout@v6
         with:
-          repository: ${{ inputs.GITHUB_ORGANISATION_KIE_TOOLS }}/kie-tools
+          repository: ${{ env.GITHUB_ORGANISATION_KIE_TOOLS }}/kie-tools
           path: kie-tools
-          ref: ${{ inputs.BRANCH_TO_BUILD }}
+          ref: ${{ env.BRANCH_TO_BUILD }}
 
       - name: Update Drools version and prepare repository
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --exclude "*/kie-ci-test-jars/*"
+          python3 ../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }} --exclude "*/kie-ci-test-jars/*"
         working-directory: drools
 
       - name: Update kogito-runtimes version
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
+          python3 ../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }}
         working-directory: kogito-runtimes
 
       - name: Update kogito-apps version
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --update-root-parent
+          python3 ../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }} --update-root-parent
         working-directory: kogito-apps
 
       - name: Update kie-tools version and prepare repository
         run: |
-          python3 ../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }} --exclude "*/maven-base/*" "*/serverless-logic-web-tools-swf-deployment-quarkus-app/*"
+          python3 ../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }} --exclude "*/maven-base/*" "*/serverless-logic-web-tools-swf-deployment-quarkus-app/*"
         working-directory: kie-tools
 
       - name: Update kie-tools maven-base
         run: |
-          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
+          python3 ../../../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }}
           sed -i 's|<version\.org\.kie\.kogito>.*</version\.org\.kie\.kogito>|<version.org.kie.kogito>${project.version}</version.org.kie.kogito>|g' ./pom.xml
         working-directory: kie-tools/packages/maven-base
 
       - name: Update kie-tools serverless-logic-web-tools-swf-deployment-quarkus-app
         run: |
-          python3 ../../../scripts/version-update/update-maven-versions.py ${{ inputs.LOGIC_VERSION }}
+          python3 ../../../scripts/version-update/update-maven-versions.py ${{ env.LOGIC_VERSION }}
         working-directory: kie-tools/packages/serverless-logic-web-tools-swf-deployment-quarkus-app
 
       - name: Build and publish Drools artifacts
@@ -121,23 +127,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kogito-runtimes artifacts
-        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.LOGIC_VERSION }}
+        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ env.LOGIC_VERSION }}
         working-directory: kogito-runtimes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kogito-apps artifacts
-        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ inputs.LOGIC_VERSION }}
+        run: mvn --batch-mode clean deploy -s ../.github/configs/settings.xml -DskipTests -Dversion.org.kie=${{ env.LOGIC_VERSION }}
         working-directory: kogito-apps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and publish kie-tools artifacts
-        run: mvn --batch-mode clean deploy -s ${{ github.workspace }}/.github/configs/settings.xml -DskipTests -Drevision=${{ inputs.LOGIC_VERSION }} -Dversion.org.kie.kogito=${{ inputs.LOGIC_VERSION }} -Dskip.maven.deploy.in.pnpm.wrapped.artifacts=false
+        run: mvn --batch-mode clean deploy -s ${{ github.workspace }}/.github/configs/settings.xml -DskipTests -Drevision=${{ env.LOGIC_VERSION }} -Dversion.org.kie.kogito=${{ env.LOGIC_VERSION }} -Dskip.maven.deploy.in.pnpm.wrapped.artifacts=false
         working-directory: kie-tools
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAVEN_ARGS: --settings=${{ github.workspace }}/.github/configs/settings.xml -Drevision=${{ inputs.LOGIC_VERSION }}
+          MAVEN_ARGS: --settings=${{ github.workspace }}/.github/configs/settings.xml -Drevision=${{ env.LOGIC_VERSION }}
           KIE_TOOLS_BUILD__mavenDeploySkip: false
           DROOLS_AND_KOGITO__skip: true
           KIE_TOOLS_BUILD__runTests: false
